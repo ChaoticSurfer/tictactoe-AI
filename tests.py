@@ -3,6 +3,6 @@ from tictactoe import *
 
 init = initial_state()
 
-state = [["", "s", "O"], ["D", "O", "X"], ["O", "X", "O"]]
+state = [[None, None, None], [None, "O", "X"], ["O", "X", "X"]]
 
-print(winner(state))
+print(player(state))

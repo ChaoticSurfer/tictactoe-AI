@@ -28,7 +28,7 @@ def player(board):
             elif place == O:
                 x_y -= 1
 
-    return X if bool(x_y) else O
+    return O if bool(x_y) else X
 
 
 def actions(board):
@@ -73,15 +73,16 @@ def winner(board):
             current = board[i][j]
             current_reverse = board[j][i]
 
-            # X
+            # x line
             if current == X:
                 check_x_line += 1
+            elif current == O:
+                check_x_line -= 1
+
+            # y line
             if current_reverse == X:
                 check_y_line += 1
-            # O
-            if current == O:
-                check_x_line -= 1
-            if current_reverse == O:
+            elif current_reverse == O:
                 check_y_line -= 1
 
         # check if won
@@ -127,35 +128,47 @@ def minimax(board):
     Returns the optimal action for the current player on the board.
     """
 
-    if player(board) == X:
-        action = max_value(board)
-    else:
-        action = min_value(board)
+    if terminal(board):
+        return None
 
-    return action
+    Player = player(board)
+
+    if Player == "X":
+        oponents_continuation_score = min_value
+    else:
+        oponents_continuation_score = max_value
+
+    options = []
+
+    for action in actions(board):
+        res = result(board, action)
+        score = oponents_continuation_score(res)
+        options.append((action, score))
+
+    if Player == "X":
+        max_or_min = max
+    else:
+        max_or_min = min
+
+    return max_or_min(options, key=lambda x: x[1])[0]
 
 
 def max_value(state):
+    v = float("-inf")
+
     if terminal(state):
         return utility(state)
 
-    options = []
-
     for action in actions(state):
-        v = min_value(result(board=state, action=action))
-        options.append((action, v))
+        v = max(v, min_value(result(board=state, action=action)))
 
-    return (max(options, key=lambda x: x[1]))[0]
+    return v
 
 
 def min_value(state):
+    v = float("inf")
     if terminal(state):
         return utility(state)
-
-    options = []
-
     for action in actions(state):
-        v = max_value(result(board=state, action=action))
-        options.append((action, v))
-
-    return (min(options, key=lambda x: x[1]))[0]
+        v = min(v, max_value(result(board=state, action=action)))
+    return v
