@@ -2,6 +2,8 @@
 Tic Tac Toe Player
 """
 
+import copy
+
 X = "X"
 O = "O"
 EMPTY = None
@@ -49,10 +51,9 @@ def result(board, action):
     """
     Returns the board that results from making move (i, j) on the board.
     """
-    print(action)
-    # ---delete
 
-    board = board.copy()
+
+    board = copy.deepcopy(board)
     i = action[0]
     j = action[1]
     if not board[i][j] is None:
@@ -167,8 +168,10 @@ def max_value(state):
 
 def min_value(state):
     v = float("inf")
+
     if terminal(state):
         return utility(state)
+
     for action in actions(state):
         v = min(v, max_value(result(board=state, action=action)))
     return v
