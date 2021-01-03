@@ -52,7 +52,6 @@ def result(board, action):
     Returns the board that results from making move (i, j) on the board.
     """
 
-
     board = copy.deepcopy(board)
     i = action[0]
     j = action[1]
@@ -136,8 +135,10 @@ def minimax(board):
 
     if Player == "X":
         oponents_continuation_score = min_value
+        max_or_min = max
     else:
         oponents_continuation_score = max_value
+        max_or_min = min
 
     options = []
 
@@ -146,32 +147,29 @@ def minimax(board):
         score = oponents_continuation_score(res)
         options.append((action, score))
 
-    if Player == "X":
-        max_or_min = max
-    else:
-        max_or_min = min
-
     return max_or_min(options, key=lambda x: x[1])[0]
 
 
-def max_value(state):
+def max_value(state, alpha=float("-inf"), beta=float("inf")):
     v = float("-inf")
 
     if terminal(state):
         return utility(state)
-
     for action in actions(state):
-        v = max(v, min_value(result(board=state, action=action)))
-
+        if beta <= alpha:
+            break
+        v = max(v, min_value(result(state, action), alpha=v, beta=beta))
     return v
 
 
-def min_value(state):
+def min_value(state, alpha=float("-inf"), beta=float("inf")):
     v = float("inf")
 
     if terminal(state):
         return utility(state)
 
     for action in actions(state):
-        v = min(v, max_value(result(board=state, action=action)))
+        if beta <= alpha:
+            break
+        v = min(v, max_value(result(state, action), beta=v, alpha=alpha))
     return v
